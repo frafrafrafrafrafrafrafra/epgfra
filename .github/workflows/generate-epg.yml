@@ -36,5 +36,4 @@ jobs:
           git add public/guide.xml
           git add public/guide.xml.gz
           git commit -m "Daily EPG update"
-          g
-          it push
+          git push
