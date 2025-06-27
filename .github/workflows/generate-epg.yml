@@ -1,0 +1,40 @@
+name: Generate EPG
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # Ogni giorno alle 2:00 UTC
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Clone iptv-org/epg
+        run: git clone --depth 1 https://github.com/iptv-org/epg.git epg-source
+
+      - name: Install dependencies
+        run: |
+          cd epg-source
+          npm install
+
+      - name: Generate EPG from guidatv.sky.it
+        run: |
+          cd epg-source
+          npm run grab --- \
+            --channels=sites/guidatv.sky.it/guidatv.sky.it.channels.xml \
+            --output=../public/guide.xml \
+            --gzip
+
+      - name: Commit and push
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add public/guide.xml
+          git add public/guide.xml.gz
+          git commit -m "Daily EPG update"
+          g
+          it push
